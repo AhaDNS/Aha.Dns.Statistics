@@ -1,0 +1,46 @@
+{
+  "### COMMENT ###": "This file should be filled renamed to local.settings.json. If hosted on azure, the function config should be set to represent all settings in this file.",
+
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  },
+  "DnsServerApiSettings": {
+    "DnsServerApis": [
+      {
+        "ServerName": "<servername1>",
+        "ApiKey": "<ApiKey>",
+        "Controller": "UnboundControlStats"
+      },
+      {
+        "ServerName": "<servername2>",
+        "ApiKey": "<ApiKey>",
+        "Controller": "UnboundControlStats"
+      }
+    ]
+  },
+  "DnsServerStatisticsStore": {
+    "ConnectionString": "UseDevelopmentStorage=true",
+    "TableName": "DnsServerStatistics"
+  },
+  "AhaDnsWebApiSettings": {
+    "Url": "<AhaDnsWebApiUrl>",
+    "ApiKey": "<AhaDnsWebApiKey>"
+  },
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console" ],
+    "MinimumLevel": "Debug",
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] SourceContext:{SourceContext} {Message:lj}{NewLine}{Exception}"
+        }
+      }
+    ],
+    "Properties": {
+      "Application": "Aha.Dns.Statistics.CloudFunctions"
+    }
+  }
+}
