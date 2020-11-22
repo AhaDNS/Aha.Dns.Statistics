@@ -44,6 +44,7 @@ The project contains two functions:
 
 ## Todo
 
+- Add the statics web project that can be seen at [statistics.pi-dns.com](https://statistics.pi-dns.com) (has to be moved from the old [pi-dns repo](https://github.com/NoExitTV/pi-dns))
 - Add setup & install instructions.
 - Perhaps create an automated github action to deploy the Azure functions.
 - Create an ARM-template combined with PowerShell to be able to automatically setup the required Azure resources.
