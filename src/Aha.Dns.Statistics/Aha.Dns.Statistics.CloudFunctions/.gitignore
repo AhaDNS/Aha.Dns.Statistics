@@ -262,3 +262,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Service dependencies folder (from doing Publish to Azure in VS)
+Properties/serviceDependencies.json
+Properties/serviceDependencies.*.json
+Properties/ServiceDependencies/*
