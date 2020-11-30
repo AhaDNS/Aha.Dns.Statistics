@@ -23,7 +23,7 @@ namespace Aha.Dns.Statistics.ServerApi
                     configurationBuilder.SetBasePath(Environment.CurrentDirectory)
                         .AddJsonFile("host.json", optional: true, reloadOnChange: true)
                         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: false, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
 
                     var configuration = configurationBuilder.Build();
