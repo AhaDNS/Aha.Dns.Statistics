@@ -30,21 +30,28 @@ Web API to be able to retrieve statistics from [unbound-control](https://www.nln
 ### Aha.Dns.Statistics.CloudFunctions
 
 An [Azure Function](https://azure.microsoft.com/en-us/services/functions/) project responsible for retrieving & storing statistics from all DNS servers running the _Aha.Dns.Statistics.ServerApi_ project.  
-The project contains two functions:
+The project contains three main functions:
 
-#### **Statistics retriever function** (automatically triggered every 15 minutes)
+#### **TimeTriggeredStatisticsRetriever-function** (automatically triggered every 15 minutes)
 
 1. Queries each DNS server for statistics.
 2. Stores the retrieved server statistics in a [Azure Table Storage](https://azure.microsoft.com/en-us/services/storage/tables/) account.
 3. Summarize statistics over the last 24 hours and sends the summarized information to the wordpress website running at [ahadns.com](https://ahadns.com).
 
+#### **MonthlyStatisticsSummarizer-function** (automatically triggered every hour)
+
+1. Summarize statistics over the last 30 days and sends the summarized information to the wordpress website running at [ahadns.com](https://ahadns.com).
+
 #### **Statistics web API function** (HTTP triggered)
 
 1. A simple GET endpoint to retrieve the summarized statistics for a server over the last 24 hours. Primarely used by our notifcation project [Aha.Dns.Notifications](https://github.com/AhaDNS/Aha.Dns.Notifications) to post daily updates in our social media accounts.
 
+### Aha.Dns.Statistics.WebUI
+
+An ASP.NET Core web app that shows DNS query statistics for the last 24h. Can be seen live at [statistics.ahadns.com](https://statistics.ahadns.com). Gets all information from the [Azure Table Storage](https://azure.microsoft.com/en-us/services/storage/tables/) used to store statistics.
+
 ## Todo
 
-- Add the statics web project that can be seen at [statistics.pi-dns.com](https://statistics.pi-dns.com) (has to be moved from the old [pi-dns repo](https://github.com/NoExitTV/pi-dns))
 - Add setup & install instructions.
 - Perhaps create an automated github action to deploy the Azure functions.
 - Create an ARM-template combined with PowerShell to be able to automatically setup the required Azure resources.
