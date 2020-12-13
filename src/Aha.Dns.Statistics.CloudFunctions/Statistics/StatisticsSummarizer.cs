@@ -25,12 +25,12 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
             _logger = Log.ForContext("SourceContext", nameof(StatisticsSummarizer));
         }
 
-        public async Task<IEnumerable<SummarizedDnsServerStatistics>> SummarizePastHours(int pastHours)
+        public async Task<IEnumerable<SummarizedDnsServerStatistics>> SummarizeTimeSpan(TimeSpan timeSpanToSummarize)
         {
-            if (pastHours <= 0)
-                throw new ArgumentOutOfRangeException($"Past hours must be a positive integer, got: {pastHours}");
+            if (timeSpanToSummarize <= TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException($"TimeSpan must be positive ant non-zero, got: {timeSpanToSummarize}");
 
-            var allServerStatistics = (await GetAllDnsServerStatistics(pastHours)).OrderBy(s => s.CreatedDate);
+            var allServerStatistics = (await GetAllDnsServerStatistics(timeSpanToSummarize)).OrderBy(s => s.CreatedDate);
             var groupedServerStatistics = allServerStatistics.GroupBy(s => s.ServerName);
             var summarizedStatisticsPerServer = new List<SummarizedDnsServerStatistics>();
 
@@ -45,12 +45,12 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
         /// Get DNS server statistics for all servers
         /// </summary>
         /// <returns></returns>
-        private async Task<List<DnsServerStatistics>> GetAllDnsServerStatistics(int pastHours)
+        private async Task<List<DnsServerStatistics>> GetAllDnsServerStatistics(TimeSpan timeSpanToSummarize)
         {
             var allDnsServerStatistics = new List<DnsServerStatistics>();
 
             foreach (var server in _dnsServerApiSettings.DnsServerApis)
-                allDnsServerStatistics.AddRange(await _dnsServerStatisticsStore.GetServerStatisticsFromDate(server.ServerName, DateTime.UtcNow.AddHours(-pastHours)));
+                allDnsServerStatistics.AddRange(await _dnsServerStatisticsStore.GetServerStatisticsFromDate(server.ServerName, DateTime.UtcNow.Subtract(timeSpanToSummarize)));
 
             return allDnsServerStatistics;
         }

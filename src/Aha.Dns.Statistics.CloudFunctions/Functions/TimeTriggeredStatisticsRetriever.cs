@@ -33,7 +33,7 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
         {
             _logger.Information("Executing function {Function} at {DateTimeUtc}", FunctionName, DateTime.UtcNow);
             await _dnsServerStatisticsIngresser.IngressDnsServerStatistics(); // Fetch & store statistics from all servers
-            var summarizedStatisticsPerServer = await _statisticsSummarizer.SummarizePastHours(HoursToSummarize); // Summarize statistics for past 24h for all servers
+            var summarizedStatisticsPerServer = await _statisticsSummarizer.SummarizeTimeSpan(TimeSpan.FromHours(HoursToSummarize)); // Summarize statistics for past 24h for all servers
             await _statisticsSender.SendSummarizedStatistics(summarizedStatisticsPerServer); // Send summarized statistics to Wordpress website
         }
     }
