@@ -16,7 +16,6 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
     public class SummarizedStatisticsApi
     {
         private const string FunctionName = nameof(SummarizedStatisticsApi);
-        private const int HoursToSummarize = 24;
 
         private readonly DnsServerApiSettings _dnsServerApiSettings;
         private readonly IStatisticsSummarizer _statisticsSummarizer;
@@ -53,9 +52,21 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
                 return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
 
+            if (!req.Query.TryGetValue("timespan", out var timeSpan) || timeSpan.Count != 1)
+            {
+                _logger.Warning("Request is missing query parameter 'timespan'");
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            if (!TimeSpan.TryParse(timeSpan[0], out var parsedTimeSpan)) 
+            {
+                _logger.Error("Could not parse timespan '{TimeSpan}'", timeSpan);
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
             try
             {
-                var result = (await _statisticsSummarizer.SummarizeTimeSpan(TimeSpan.FromHours(HoursToSummarize))).First(stat => stat.ServerName == server[0]);
+                var result = (await _statisticsSummarizer.SummarizeTimeSpan(parsedTimeSpan)).First(stat => stat.ServerName == server[0]);
                 _logger.Information("Returning result for server '{Server}' consisting of '{Count}' datapoints", server[0], result.DataPoints);
                 return new OkObjectResult(result);
             }
