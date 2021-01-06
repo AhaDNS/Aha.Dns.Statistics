@@ -34,15 +34,9 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req)
         {
-            if (!req.Query.TryGetValue("server", out var server))
+            if (!req.Query.TryGetValue("server", out var server) || server.Count != 1)
             {
                 _logger.Warning("Request is missing query parameter 'server'");
-                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
-            }
-
-            if (server.Count != 1)
-            {
-                _logger.Warning("Query param server does not contains exactly one value (param: '{@Param}')", server);
                 return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
             
