@@ -44,14 +44,13 @@ The project contains three main functions:
 
 #### **Statistics web API function** (HTTP triggered)
 
-1. A simple GET endpoint to retrieve the summarized statistics for a server over the last 24 hours. Primarely used by our notifcation project [Aha.Dns.Notifications](https://github.com/AhaDNS/Aha.Dns.Notifications) to post daily updates in our social media accounts.
+1. A simple GET endpoint to retrieve the summarized statistics for a server over a given TimeSpan. Primarely used by our notifcation project [Aha.Dns.Notifications](https://github.com/AhaDNS/Aha.Dns.Notifications) to post daily updates in our social media accounts.
 
 ### Aha.Dns.Statistics.WebUI
 
 An ASP.NET Core web app that shows DNS query statistics for the last 24h. Can be seen live at [statistics.ahadns.com](https://statistics.ahadns.com). Gets all information from the [Azure Table Storage](https://azure.microsoft.com/en-us/services/storage/tables/) used to store statistics.
 
-## Todo
+## How to handle AppSettings?
 
-- Add setup & install instructions.
-- Perhaps create an automated github action to deploy the Azure functions.
-- Create an ARM-template combined with PowerShell to be able to automatically setup the required Azure resources.
+1. In `Aha.Dns.Statistics.CloudFunctions`, rename `example.settings.json` to `local.settings.json` and configure all values as you've setup your environment.
+2. In `Aha.Dns.Statistics.ServerApi & WebUI` you can override the default appsettings.json by creating `appsettings.Development.json` or `appsettings.Production.json` depending on your environment.
