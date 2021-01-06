@@ -11,7 +11,7 @@ Type of changes can be `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Se
 
 ### Changed
 
-- Modified SummarizedStatisticsApi-function to take timespan as query parameter
+- Modified SummarizedStatisticsApi-function in CloudFunctions to take timespan as query parameter
 
 ## [1.0.0] - 2020-12-13
 
