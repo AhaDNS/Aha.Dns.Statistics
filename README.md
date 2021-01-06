@@ -49,3 +49,8 @@ The project contains three main functions:
 ### Aha.Dns.Statistics.WebUI
 
 An ASP.NET Core web app that shows DNS query statistics for the last 24h. Can be seen live at [statistics.ahadns.com](https://statistics.ahadns.com). Gets all information from the [Azure Table Storage](https://azure.microsoft.com/en-us/services/storage/tables/) used to store statistics.
+
+## How to handle AppSettings?
+
+1. In `Aha.Dns.Statistics.CloudFunctions`, rename `example.settings.json` to `local.settings.json` and configure all values as you've setup your environment.
+2. In `Aha.Dns.Statistics.ServerApi & WebUI` you can override the default appsettings.json by creating `appsettings.Development.json` or `appsettings.Production.json` depending on your environment.
