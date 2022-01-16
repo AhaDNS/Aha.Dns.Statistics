@@ -26,7 +26,7 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
         }
 
         [FunctionName("MonthlyStatisticsSummarizer")]
-        public async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 */12 * * *")] TimerInfo myTimer)
         {
             var summarizedStatisticsPerServer = await _statisticsSummarizer.SummarizeTimeSpan(TimeSpan.FromDays(30));
             foreach (var statistic in summarizedStatisticsPerServer)

@@ -1,6 +1,3 @@
-using Aha.Dns.Statistics.Common.Settings;
-using Aha.Dns.Statistics.Common.Stores;
-using Aha.Dns.Statistics.Common.Stores.Storage;
 using Aha.Dns.Statistics.WebUI.Settings;
 using Aha.Dns.Statistics.WebUI.Statistics;
 using Microsoft.AspNetCore.Builder;
@@ -28,12 +25,11 @@ namespace Aha.Dns.Statistics.WebUI
             services.AddControllersWithViews();
 
             // Configs
-            services.Configure<DnsServerStatisticsStoreSettings>(Configuration.GetSection(DnsServerStatisticsStoreSettings.ConfigSectionName));
+            services.Configure<StatisticsApiSettings>(Configuration.GetSection(StatisticsApiSettings.ConfigSectionName));
             services.Configure<DisplayableDnsServerSettings>(Configuration.GetSection(DisplayableDnsServerSettings.ConfigSectionName));
 
             // Dependencies
-            services.AddSingleton<IDnsServerStatisticsStore, DnsServerStatisticsStorage>();
-            services.AddSingleton<IStatisticsProvider, CachedStatisticsProvider>();
+            services.AddHttpClient<IStatisticsProvider, CachedStatisticsProvider>();
 
             services.AddMemoryCache();
         }

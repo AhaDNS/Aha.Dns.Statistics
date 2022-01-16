@@ -14,5 +14,12 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
         /// <param name="timeSpanToSummarize"></param>
         /// <returns></returns>
         Task<IEnumerable<SummarizedDnsServerStatistics>> SummarizeTimeSpan(TimeSpan timeSpanToSummarize);
+
+        /// <summary>
+        /// Summarize single server statistics for the TimeSpan time
+        /// </summary>
+        /// <param name="timeSpanToSummarize"></param>
+        /// <returns></returns>
+        Task<SummarizedDnsServerStatistics> SummarizeTimeSpanForSingleServer(TimeSpan timeSpanToSummarize, string serverName);
     }
 }

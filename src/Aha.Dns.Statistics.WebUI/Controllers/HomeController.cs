@@ -38,16 +38,10 @@ namespace Aha.Dns.Statistics.WebUI.Controllers
                 if (!IsValidServer(server))
                     return View(new HomeViewModel(_dnsServersSettings));
 
-                IOrderedEnumerable<DnsServerStatistics> statisticsData;
-
-                if (server == "all")
-                    statisticsData = await GetAllDnsServerStatistics();
-                else
-                    statisticsData = await _statisticsProvider.GetStatisticsForServer(server);
-
-                if (statisticsData == null || statisticsData.Count() == 0)
+                var statisticsData = await _statisticsProvider.GetStatisticsForServer(server);
+                if (statisticsData == null || !statisticsData.Any())
                 {
-                    _logger.Warning("Could not find any statistics in storage for server {Server}", server);
+                    _logger.Warning("Could not find any statistics for server {Server}", server);
                     return View(new HomeViewModel(_dnsServersSettings));
                 }
 
@@ -77,7 +71,7 @@ namespace Aha.Dns.Statistics.WebUI.Controllers
                 // Fill model with statistics
                 var homeViewModel = new HomeViewModel(_dnsServersSettings)
                 {
-                    ServerName = statisticsData.First().ServerName,
+                    ServerName = server,
                     QueriesRequested = statisticsData.Sum(x => x.QueriesRequested).ToString("N0"),
                     QueriesBlocked = statisticsData.Sum(x => x.QueriesBlocked).ToString("N0"),
 
@@ -117,68 +111,6 @@ namespace Aha.Dns.Statistics.WebUI.Controllers
         private bool IsValidServer(string server)
         {
             return _dnsServersSettings.DisplayableDnsServers.Any(s => s.ServerName == server);
-        }
-
-        /// <summary>
-        /// Get DNS server statistics for all servers
-        /// </summary>
-        /// <returns></returns>
-        private async Task<IOrderedEnumerable<DnsServerStatistics>> GetAllDnsServerStatistics()
-        {
-            var allDnsServerStatistics = new List<DnsServerStatistics>();
-
-            foreach (var server in _dnsServersSettings.DisplayableDnsServers)
-            {
-                if (server.ServerName != "all")
-                    allDnsServerStatistics.AddRange(await _statisticsProvider.GetStatisticsForServer(server.ServerName));
-            }
-
-            return AggregateAllServerStatistics(allDnsServerStatistics);
-        }
-
-        /// <summary>
-        /// Group and concatenate all DNS server statistics increments on CreatedDate
-        /// </summary>
-        /// <param name="serverStatistics"></param>
-        /// <returns></returns>
-        private IOrderedEnumerable<DnsServerStatistics> AggregateAllServerStatistics(List<DnsServerStatistics> serverStatistics)
-        {
-            // Hack, remove seconds and milliseconds from DateTime when grouping
-            var groupedByTimestamp = serverStatistics.GroupBy(s => new DateTime(s.CreatedDate.AddSeconds(-s.CreatedDate.Second).Ticks - (s.CreatedDate.Ticks % TimeSpan.TicksPerSecond), s.CreatedDate.Kind));
-            var concatenatedStatistics = new List<DnsServerStatistics>();
-
-            foreach (var group in groupedByTimestamp)
-            {
-                var newStat = new DnsServerStatistics
-                {
-                    ServerName = "all",
-                    CreatedDate = group.Key
-                };
-
-                foreach (var property in typeof(DnsServerStatistics).GetProperties())
-                {
-                    if (property.PropertyType == typeof(int))
-                    {
-                        var value = group.Sum(s => (int)s.GetType().GetProperty(property.Name).GetValue(s));
-                        property.SetValue(newStat, value);
-                    }
-                    else if (property.PropertyType == typeof(double))
-                    {
-                        var value = group.Sum(s => (double)s.GetType().GetProperty(property.Name).GetValue(s));
-                        property.SetValue(newStat, value);
-                    }
-                    else if (property.PropertyType == typeof(long))
-                    {
-                        var value = group.Sum(s => (long)s.GetType().GetProperty(property.Name).GetValue(s));
-                        property.SetValue(newStat, value);
-                    }
-                }
-
-                newStat.DomainsOnBlockList /= group.Count();
-                concatenatedStatistics.Add(newStat);
-            }
-
-            return concatenatedStatistics.OrderBy(stats => stats.CreatedDate);
         }
     }
 }
