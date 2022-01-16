@@ -46,11 +46,7 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
                 summarizedStatisticsPerServer.Add(new SummarizedDnsServerStatistics(group.ToList())); // Create one summary per server
             }
 
-            if (blitzServerStatisticsTask.Result.Any())
-            {
-                summarizedStatisticsPerServer.Add(new SummarizedDnsServerStatistics(blitzServerStatisticsTask.Result) { ServerName = "blitz" }); // Create one summary for all blitz servers
-            }
-
+            summarizedStatisticsPerServer.Add(new SummarizedDnsServerStatistics(blitzServerStatisticsTask.Result) { ServerName = "blitz" }); // Create one summary for all blitz servers
             summarizedStatisticsPerServer.Add(new SummarizedDnsServerStatistics(allServerStatistics) { ServerName = "all" }); // Create one summary for all servers
             return summarizedStatisticsPerServer;
         }

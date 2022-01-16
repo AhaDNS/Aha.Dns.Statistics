@@ -39,7 +39,7 @@ namespace Aha.Dns.Statistics.WebUI.Controllers
                     return View(new HomeViewModel(_dnsServersSettings));
 
                 var statisticsData = await _statisticsProvider.GetStatisticsForServer(server);
-                if (statisticsData == null || statisticsData.Count() == 0)
+                if (statisticsData == null || !statisticsData.Any())
                 {
                     _logger.Warning("Could not find any statistics for server {Server}", server);
                     return View(new HomeViewModel(_dnsServersSettings));
