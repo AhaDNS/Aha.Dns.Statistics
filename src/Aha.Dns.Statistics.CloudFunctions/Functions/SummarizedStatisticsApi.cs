@@ -16,16 +16,18 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
     public class SummarizedStatisticsApi
     {
         private const string FunctionName = nameof(SummarizedStatisticsApi);
-
         private readonly DnsServerApiSettings _dnsServerApiSettings;
+        private readonly BlitzServerSettings _blitzServerSettings;
         private readonly IStatisticsSummarizer _statisticsSummarizer;
         private readonly ILogger _logger;
 
         public SummarizedStatisticsApi(
-            IOptions<DnsServerApiSettings> dnsServerApiSettings, 
+            IOptions<DnsServerApiSettings> dnsServerApiSettings,
+            IOptions<BlitzServerSettings> blitzServerSettings,
             IStatisticsSummarizer statisticsSummarizer)
         {
             _dnsServerApiSettings = dnsServerApiSettings.Value;
+            _blitzServerSettings = blitzServerSettings.Value;
             _statisticsSummarizer = statisticsSummarizer;
             _logger = Log.ForContext("SourceContext", FunctionName);
         }
@@ -54,13 +56,13 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
 
             if (!TimeSpan.TryParse(timeSpan[0], out var parsedTimeSpan)) 
             {
-                _logger.Error("Could not parse timespan '{TimeSpan}'", timeSpan);
+                _logger.Error("Could not parse timespan '{TimeSpan}'", timeSpan[0]);
                 return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
 
             try
             {
-                var result = (await _statisticsSummarizer.SummarizeTimeSpan(parsedTimeSpan)).First(stat => stat.ServerName == server[0]);
+                var result = await _statisticsSummarizer.SummarizeTimeSpanForSingleServer(parsedTimeSpan, server[0]);
                 _logger.Information("Returning result for server '{Server}' consisting of '{Count}' datapoints", server[0], result.DataPoints);
                 return new OkObjectResult(result);
             }
@@ -73,7 +75,10 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
 
         private bool IsValidServer(string server)
         {
-            return server == "all" || _dnsServerApiSettings.DnsServerApis.Any(item => item.ServerName == server);
+            return server == "all" 
+                || server == "blitz" 
+                || _dnsServerApiSettings.DnsServerApis.Any(entry => entry.ServerName == server) 
+                || _blitzServerSettings.BlitzServers.Any(entry => entry.ServerName == server);
         }
     }
 }

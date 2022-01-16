@@ -20,6 +20,13 @@
       }
     ]
   },
+  "BlitzServerSettings": {
+    "BlitzServers": [
+      {
+        "ServerName": "<servername1>"
+      }
+    ]
+  },
   "DnsServerStatisticsStore": {
     "ConnectionString": "UseDevelopmentStorage=true",
     "TableName": "DnsServerStatistics"

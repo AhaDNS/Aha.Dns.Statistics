@@ -15,6 +15,11 @@ namespace Aha.Dns.Statistics.Common.Models
 
         public SummarizedDnsServerStatistics(IEnumerable<DnsServerStatistics> dnsServerStatistics)
         {
+            if (dnsServerStatistics == null || !dnsServerStatistics.Any())
+            {
+                return;
+            }
+
             ServerName = dnsServerStatistics.First(s => !string.IsNullOrEmpty(s.ServerName)).ServerName;
             CreatedDate = DateTime.UtcNow;
             DataPoints = dnsServerStatistics.Count();

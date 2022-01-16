@@ -50,6 +50,11 @@ namespace Aha.Dns.Statistics.CloudFunctions
             {
                 configuration.GetSection(AhaDnsWebApiSettings.ConfigSectionName).Bind(settings);
             });
+            builder.Services.AddOptions<BlitzServerSettings>()
+            .Configure<IConfiguration>((settings, configuration) =>
+            {
+                configuration.GetSection(BlitzServerSettings.ConfigSectionName).Bind(settings);
+            });
 
             // Add logger
             //builder.Services.AddLogging(lb => lb.AddSerilog(_logger)); // This just gives to much logs!

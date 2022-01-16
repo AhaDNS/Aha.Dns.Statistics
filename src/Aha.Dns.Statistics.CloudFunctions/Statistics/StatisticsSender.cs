@@ -34,7 +34,7 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
             {
                 try
                 {
-                    _logger.Information("Sending DNS server statistics from server {Server}", summarizedServerStatistics.ServerName);
+                    _logger.Information("Sending DNS server statistics for server {Server} to URL {Url} with data {@Data}", summarizedServerStatistics.ServerName, _webApiSettings.Url, summarizedServerStatistics);
                     var queryParameters = new Dictionary<string, string>
                     {
                         { "api_key", _webApiSettings.ApiKey }
@@ -42,7 +42,6 @@ namespace Aha.Dns.Statistics.CloudFunctions.Statistics
 
                     var requestUri = QueryHelpers.AddQueryString(_webApiSettings.Url, queryParameters);
                     var content = new StringContent(JsonConvert.SerializeObject(summarizedServerStatistics), Encoding.UTF8, "application/json");
-                    _logger.Debug("Sending POST -> {Url} with content '{@Content}'", _webApiSettings.Url, content);
                     tasks.Add(_httpClient.PostAsync(requestUri, content));
                 }
                 catch (Exception e)

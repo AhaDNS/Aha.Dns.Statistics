@@ -29,10 +29,10 @@ namespace Aha.Dns.Statistics.CloudFunctions.Functions
         }
 
         [FunctionName(FunctionName)]
-        public async Task Run([TimerTrigger("0 */15 * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 */30 * * * *")] TimerInfo myTimer)
         {
             _logger.Information("Executing function {Function} at {DateTimeUtc}", FunctionName, DateTime.UtcNow);
-            await _dnsServerStatisticsIngresser.IngressDnsServerStatistics(); // Fetch & store statistics from all servers
+            await _dnsServerStatisticsIngresser.IngressDnsServerStatistics(); // Fetch & store statistics from all servers (legacy only)
             var summarizedStatisticsPerServer = await _statisticsSummarizer.SummarizeTimeSpan(TimeSpan.FromHours(HoursToSummarize)); // Summarize statistics for past 24h for all servers
             await _statisticsSender.SendSummarizedStatistics(summarizedStatisticsPerServer); // Send summarized statistics to Wordpress website
         }
